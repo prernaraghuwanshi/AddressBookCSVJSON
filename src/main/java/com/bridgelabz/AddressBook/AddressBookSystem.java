@@ -14,7 +14,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 public class AddressBookSystem {
 	public enum IOType {
-		FILE_IO, CSV_IO
+		FILE_IO, CSV_IO, JSON_IO
 	};
 
 	HashMap<String, AddressBookMain> addressBookMap;
@@ -189,6 +189,11 @@ public class AddressBookSystem {
 				new AddressBookIO().writeDataToCSV(addressBookMap.get(addressBookName).contactList, addressBookName);
 			} catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
 			}
+		else if (iotype.equals(IOType.JSON_IO))
+			try {
+				new AddressBookIO().writeDataToJSON(addressBookMap.get(addressBookName).contactList, addressBookName);
+			} catch (IOException e) {
+			}
 	}
 
 	public ArrayList<Contacts> readData(String addressBookName, IOType iotype) {
@@ -202,6 +207,13 @@ public class AddressBookSystem {
 			} catch (IOException e) {
 			}
 			return readFromCSVContactList;
+		} else if (iotype.equals(IOType.JSON_IO)) {
+			ArrayList<Contacts> readFromJSONContactList = null;
+			try {
+				readFromJSONContactList = new AddressBookIO().readDataFromJSON(addressBookName);
+			} catch (IOException e) {
+			}
+			return readFromJSONContactList;
 		}
 		return null;
 	}
@@ -315,7 +327,7 @@ public class AddressBookSystem {
 			case 12:
 				// Write Data
 				Scanner s6 = new Scanner(System.in);
-				System.out.println("Where to write? \n Type 1 for .txt file \n Type 2 for CSV file");
+				System.out.println("Where to write? \n Type 1 for .txt file \n Type 2 for CSV file \n Type 3 for JSON");
 				int option = s6.nextInt();
 				s6.nextLine();
 				System.out.println("Enter name of address book for which you need to write data: ");
@@ -324,11 +336,13 @@ public class AddressBookSystem {
 					ads.writeData(nameAddressBook, IOType.FILE_IO);
 				else if (option == 2)
 					ads.writeData(nameAddressBook, IOType.CSV_IO);
+				else if (option == 3)
+					ads.writeData(nameAddressBook, IOType.JSON_IO);
 				break;
 			case 13:
 				// Read Data
 				Scanner s7 = new Scanner(System.in);
-				System.out.println("Where to read from? \n Type 1 for .txt file \n Type 2 for CSV file");
+				System.out.println("Where to read from? \n Type 1 for .txt file \n Type 2 for CSV file \n Type 3 for JSON");
 				int optionRead = s7.nextInt();
 				s7.nextLine();
 				System.out.println("Enter name of address book for which you need to write data: ");
@@ -338,6 +352,8 @@ public class AddressBookSystem {
 					dataFromIO = ads.readData(nameOfAddressBook, IOType.FILE_IO);
 				else if (optionRead == 2)
 					dataFromIO = ads.readData(nameOfAddressBook, IOType.CSV_IO);
+				else if (optionRead == 3)
+					dataFromIO = ads.readData(nameOfAddressBook, IOType.JSON_IO);
 				for (Contacts contact : dataFromIO) {
 					System.out.println("-----Displaying Contact-----");
 					System.out.println("First Name: " + contact.getFirstName());

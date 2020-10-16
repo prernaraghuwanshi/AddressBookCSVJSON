@@ -8,8 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.google.gson.Gson;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
@@ -99,5 +101,27 @@ public class AddressBookIO {
 			}
 			return contactList;
 		}
+	}
+
+	// Write to JSON
+	public void writeDataToJSON(List<Contacts> contactList, String addressBookName) throws IOException {
+		Path pathForResources = createDirectory();
+		try (Writer writer = Files.newBufferedWriter(Paths.get(pathForResources + "/" + addressBookName + ".json"));) {
+			Gson gson = new Gson();
+			String json = gson.toJson(contactList);
+			writer.write(json);
+		}
+	}
+	
+	//Read from JSON
+	public ArrayList<Contacts> readDataFromJSON(String addressBookName) throws IOException
+	{
+		Path pathForResources = createDirectory();
+		ArrayList<Contacts> contactList = null;
+		try (Reader reader = Files.newBufferedReader(Paths.get(pathForResources + "/" + addressBookName + ".json"));) {
+			Gson gson = new Gson();
+			contactList = new ArrayList<Contacts> (Arrays.asList(gson.fromJson(reader, Contacts[].class)));
+		}
+		return contactList;
 	}
 }
