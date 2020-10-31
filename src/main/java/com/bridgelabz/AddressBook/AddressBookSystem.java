@@ -243,8 +243,8 @@ public class AddressBookSystem {
         return addressBookDBService.getContactInDateRange(startDate, endDate);
     }
 
-    public List<Contacts> getContactInCity(String city) {
-        return addressBookDBService.getContactInCity(city);
+    public Map<String, Integer> getContactInCity() {
+        return addressBookDBService.getContactInCity();
     }
 
     private Contacts getContactData(String name) {

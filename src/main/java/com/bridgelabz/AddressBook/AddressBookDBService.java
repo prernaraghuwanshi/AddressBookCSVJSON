@@ -3,7 +3,9 @@ package com.bridgelabz.AddressBook;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddressBookDBService {
     String query = "Select * from contact;";
@@ -52,13 +54,26 @@ public class AddressBookDBService {
     }
 
     public List<Contacts> getContactInDateRange(LocalDate startDate, LocalDate endDate) {
-        String query =String.format("select * from contact where date_added between '%s' and '%s';",Date.valueOf(startDate),Date.valueOf(endDate));
+        String query = String.format("select * from contact where date_added between '%s' and '%s';", Date.valueOf(startDate), Date.valueOf(endDate));
         return this.getContactDataUsingDB(query);
     }
 
-    public List<Contacts> getContactInCity(String city) {
-        String query = String.format("select * from contact where city = '%s';",city);
-        return this.getContactDataUsingDB(query);
+    public Map<String, Integer> getContactInCity() {
+        Map<String,Integer> contactMap=new HashMap<String, Integer>();
+        String query = String.format("select city,count(contact_id) as count from contact group by city;");
+        try {
+            Connection connection = this.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(query);
+            while(result.next()){
+                int count = result.getInt("count");
+                String city = result.getString("city");
+                contactMap.put(city,count);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return contactMap;
     }
 
     private List<Contacts> getContactDataUsingDB(String query) {
