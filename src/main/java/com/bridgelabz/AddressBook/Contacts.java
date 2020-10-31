@@ -1,5 +1,6 @@
 package com.bridgelabz.AddressBook;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Contacts {
@@ -12,6 +13,7 @@ public class Contacts {
 	public String zip;
 	public String phoneNo;
 	public String email;
+	public LocalDate date_added;
 
 	@Override
 	public boolean equals(Object o) {
@@ -32,6 +34,19 @@ public class Contacts {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, firstName, lastName, address, city, state, zip, phoneNo, email);
+	}
+
+	public Contacts(int id, String firstName, String lastName, String address, String city, String state, String zip, String phoneNo, String email, LocalDate date_added) {
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.address = address;
+		this.city = city;
+		this.state = state;
+		this.zip = zip;
+		this.phoneNo = phoneNo;
+		this.email = email;
+		this.date_added = date_added;
 	}
 
 	public Contacts(String firstName, String lastName, String address, String city, String state, String zip,
