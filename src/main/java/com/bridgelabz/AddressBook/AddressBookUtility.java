@@ -1,11 +1,12 @@
 package com.bridgelabz.AddressBook;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AddressBookUtility {
     private static Scanner q;
-    public static void main(String args[]) {
+    public static void main(String args[]) throws SQLException {
         System.out.println("Welcome to Address Book Program!");
         AddressBookSystem ads = new AddressBookSystem();
         boolean flag1 = true;
