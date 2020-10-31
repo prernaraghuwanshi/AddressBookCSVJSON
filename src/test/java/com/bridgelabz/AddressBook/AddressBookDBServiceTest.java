@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,7 +47,8 @@ public class AddressBookDBServiceTest {
     @Test
     public void givenContactDB_whenRetrievingContactsByCity_shouldGiveCorrectCount() throws SQLException {
         addressBookSystem.readDataFromDB();
-        List<Contacts> contactsListInCity = addressBookSystem.getContactInCity("Bhopal");
-        Assert.assertEquals(3,contactsListInCity.size());
+        Map<String, Integer> contactsListInCity = addressBookSystem.getContactInCity();
+        Assert.assertEquals(3, (int) contactsListInCity.get("Bhopal"));
+        Assert.assertEquals(1, (int) contactsListInCity.get("Chennai"));
     }
 }
