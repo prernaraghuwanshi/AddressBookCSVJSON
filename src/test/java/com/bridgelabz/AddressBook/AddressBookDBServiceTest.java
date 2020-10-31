@@ -13,20 +13,21 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 
-public class AddressBookDBServiceTest
-{
+public class AddressBookDBServiceTest {
     AddressBookSystem addressBookSystem;
     ArrayList<Contacts> contactsList;
+
     @Before
-    public void initialize()
-    {
+    public void initialize() {
         addressBookSystem = new AddressBookSystem();
     }
+
     @Test
     public void givenEmployeeInDB_whenRetrieved_shouldMatchEmployeeCount() throws SQLException {
         List<Contacts> contactList = addressBookSystem.readDataFromDB();
         Assert.assertEquals(4, contactList.size());
     }
+
     @Test
     public void givenNewAddressForContact_whenUpdated_shouldSyncWithDB() throws SQLException {
         addressBookSystem.readDataFromDB();
@@ -38,7 +39,14 @@ public class AddressBookDBServiceTest
     @Test
     public void givenContactDB_whenRetrievingContactsInDateRange_shouldGiveCorrectCount() throws SQLException {
         addressBookSystem.readDataFromDB();
-        List<Contacts> contactsListInDateRange = addressBookSystem.getContactInDateRange(LocalDate.of(2019,01,01),LocalDate.of(2020,12,31));
-        Assert.assertEquals(3,contactsListInDateRange.size());
+        List<Contacts> contactsListInDateRange = addressBookSystem.getContactInDateRange(LocalDate.of(2019, 01, 01), LocalDate.of(2020, 12, 31));
+        Assert.assertEquals(3, contactsListInDateRange.size());
+    }
+
+    @Test
+    public void givenContactDB_whenRetrievingContactsByCity_shouldGiveCorrectCount() throws SQLException {
+        addressBookSystem.readDataFromDB();
+        List<Contacts> contactsListInCity = addressBookSystem.getContactInCity("Bhopal");
+        Assert.assertEquals(3,contactsListInCity.size());
     }
 }
