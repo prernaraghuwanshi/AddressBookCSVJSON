@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,5 +33,12 @@ public class AddressBookDBServiceTest
         addressBookSystem.updateAddress("Nivedita", "shashtri ward");
         boolean result = addressBookSystem.checkContactInSyncWithDB("Nivedita");
         Assert.assertTrue(result);
+    }
+
+    @Test
+    public void givenContactDB_whenRetrievingContactsInDateRange_shouldGiveCorrectCount() throws SQLException {
+        addressBookSystem.readDataFromDB();
+        List<Contacts> contactsListInDateRange = addressBookSystem.getContactInDateRange(LocalDate.of(2019,01,01),LocalDate.of(2020,12,31));
+        Assert.assertEquals(3,contactsListInDateRange.size());
     }
 }
