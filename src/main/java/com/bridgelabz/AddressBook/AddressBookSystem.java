@@ -14,7 +14,6 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 public class AddressBookSystem {
-
     public enum IOType {
         FILE_IO, CSV_IO, JSON_IO, DB_IO
     }
@@ -230,5 +229,23 @@ public class AddressBookSystem {
         contactsList = addressBookDBService.readData();
         return contactsList;
     }
+
+    public void updateAddress(String name, String newAddress) {
+        int result = addressBookDBService.updateContactData(name, newAddress);
+        if (result == 0) return;
+        Contacts contactData = this.getContactData(name);
+        if (contactData != null) contactData.address = newAddress;
+    }
+    private Contacts getContactData(String name) {
+        return contactsList.stream()
+                .filter(contacts -> contacts.firstName.equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+    public boolean checkContactInSyncWithDB(String name) {
+        List<Contacts> contactList = addressBookDBService.getContactData(name);
+        return contactList.get(0).equals(getContactData(name));
+    }
+
 
 }

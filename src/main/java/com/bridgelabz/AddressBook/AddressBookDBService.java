@@ -22,7 +22,7 @@ public class AddressBookDBService {
     private Connection getConnection() {
         String jdbcURL = "jdbc:mysql://localhost:3306/address_book_service?allowPublicKeyRetrieval=true&useSSL=false";
         String userName = "root";
-        String password = "M4A4T!Hs";
+        String password = "root";
         Connection con = null;
         try {
             System.out.println("Connecting to database:" + jdbcURL);
@@ -36,6 +36,19 @@ public class AddressBookDBService {
 
     public List<Contacts> readData() throws SQLException {
         return this.getContactDataUsingDB(query);
+    }
+
+    public int updateContactData(String name, String newAddress) {
+        String query = "update contact set address= ? where first_name= ?";
+        try (Connection connection = this.getConnection();) {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, newAddress);
+            preparedStatement.setString(2, name);
+            return preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     private List<Contacts> getContactDataUsingDB(String query) {
@@ -89,10 +102,11 @@ public class AddressBookDBService {
     private void prepareStatementForContactData() {
         try {
             Connection connection = this.getConnection();
-            String query = "select * from contact where name = ?";
+            String query = "select * from contact where first_name = ?";
             contactDataStatement = connection.prepareStatement(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 }
