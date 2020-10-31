@@ -247,6 +247,10 @@ public class AddressBookSystem {
         return addressBookDBService.getContactInCity();
     }
 
+    public void addContactToDB(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded) {
+        contactsList.add(addressBookDBService.addContact(firstName,lastName,address,city,state,zip,phone,email,dateAdded));
+    }
+
     private Contacts getContactData(String name) {
         return contactsList.stream()
                 .filter(contacts -> contacts.firstName.equals(name))
@@ -258,6 +262,5 @@ public class AddressBookSystem {
         List<Contacts> contactList = addressBookDBService.getContactData(name);
         return contactList.get(0).equals(getContactData(name));
     }
-
 
 }
