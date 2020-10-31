@@ -24,7 +24,7 @@ public class AddressBookDBService {
     private Connection getConnection() {
         String jdbcURL = "jdbc:mysql://localhost:3306/address_book_service?allowPublicKeyRetrieval=true&useSSL=false";
         String userName = "root";
-        String password = "M4A4T!Hs";
+        String password = "root";
         Connection con = null;
         try {
             System.out.println("Connecting to database:" + jdbcURL);
@@ -87,9 +87,9 @@ public class AddressBookDBService {
             throwables.printStackTrace();
         }
 
-        try(Statement statement = connection.createStatement()){
+        try (Statement statement = connection.createStatement()) {
             String sql = String.format("insert into contact(first_name,last_name,address,city,state,zip,phone_number,email,date_added)" +
-                    "values('%s','%s','%s','%s','%s','%s','%s','%s','%s')",firstName,lastName,address,city,state,zip,phone,email,dateAdded);
+                    "values('%s','%s','%s','%s','%s','%s','%s','%s','%s')", firstName, lastName, address, city, state, zip, phone, email, dateAdded);
             int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
             if (rowAffected == 1) {
                 ResultSet resultSet = statement.getGeneratedKeys();
@@ -105,13 +105,13 @@ public class AddressBookDBService {
                 e.printStackTrace();
             }
         }
-        try(Statement statement = connection.createStatement()){
+        try (Statement statement = connection.createStatement()) {
             int addressBookId = 1;
             String type = "Friends";
-            String sql = String.format("insert into contact_listing values ('%s','%s','%s')",addressBookId,contact_id,type);
+            String sql = String.format("insert into contact_listing values ('%s','%s','%s')", addressBookId, contact_id, type);
             int rowAffected = statement.executeUpdate(sql);
             if (rowAffected == 1) {
-                contact = new Contacts(contact_id,firstName,lastName,address,city,state,zip,phone,email,dateAdded);
+                contact = new Contacts(contact_id, firstName, lastName, address, city, state, zip, phone, email, dateAdded);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -120,12 +120,13 @@ public class AddressBookDBService {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        } try {
+        }
+        try {
             connection.commit();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-        } finally{
-            if(connection != null) {
+        } finally {
+            if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException throwables) {
