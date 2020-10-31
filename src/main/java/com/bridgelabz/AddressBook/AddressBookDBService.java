@@ -56,6 +56,11 @@ public class AddressBookDBService {
         return this.getContactDataUsingDB(query);
     }
 
+    public List<Contacts> getContactInCity(String city) {
+        String query = String.format("select * from contact where city = '%s';",city);
+        return this.getContactDataUsingDB(query);
+    }
+
     private List<Contacts> getContactDataUsingDB(String query) {
         List<Contacts> contactDataList = new ArrayList<>();
         try {

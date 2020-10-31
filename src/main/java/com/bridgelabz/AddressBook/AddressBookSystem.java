@@ -222,7 +222,7 @@ public class AddressBookSystem {
             }
             return readFromJSONContactList;
         } else if (iotype.equals(IOType.DB_IO)) {
-           return (ArrayList<Contacts>) readDataFromDB();
+            return (ArrayList<Contacts>) readDataFromDB();
         }
         return null;
     }
@@ -240,7 +240,11 @@ public class AddressBookSystem {
     }
 
     public List<Contacts> getContactInDateRange(LocalDate startDate, LocalDate endDate) {
-        return addressBookDBService.getContactInDateRange(startDate,endDate);
+        return addressBookDBService.getContactInDateRange(startDate, endDate);
+    }
+
+    public List<Contacts> getContactInCity(String city) {
+        return addressBookDBService.getContactInCity(city);
     }
 
     private Contacts getContactData(String name) {
@@ -249,6 +253,7 @@ public class AddressBookSystem {
                 .findFirst()
                 .orElse(null);
     }
+
     public boolean checkContactInSyncWithDB(String name) {
         List<Contacts> contactList = addressBookDBService.getContactData(name);
         return contactList.get(0).equals(getContactData(name));
