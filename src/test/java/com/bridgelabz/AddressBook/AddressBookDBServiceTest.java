@@ -51,4 +51,12 @@ public class AddressBookDBServiceTest {
         Assert.assertEquals(3, (int) contactsListInCity.get("Bhopal"));
         Assert.assertEquals(1, (int) contactsListInCity.get("Chennai"));
     }
+
+    @Test
+    public void givenNewContact_whenAdded_shouldBeInSyncWithDB() throws SQLException {
+        addressBookSystem.readDataFromDB();
+        addressBookSystem.addContactToDB("Rekha","Verma","qwerty lane","Jaipur","Rajasthan","234567","2345678901","sdfgth@yahoo.com",LocalDate.now());
+        boolean result= addressBookSystem.checkContactInSyncWithDB("Rekha");
+        Assert.assertTrue(result);
+    }
 }
