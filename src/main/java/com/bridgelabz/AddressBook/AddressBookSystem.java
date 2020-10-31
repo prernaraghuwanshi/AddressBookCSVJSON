@@ -2,6 +2,7 @@ package com.bridgelabz.AddressBook;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 public class AddressBookSystem {
+
     public enum IOType {
         FILE_IO, CSV_IO, JSON_IO, DB_IO
     }
@@ -236,6 +238,11 @@ public class AddressBookSystem {
         Contacts contactData = this.getContactData(name);
         if (contactData != null) contactData.address = newAddress;
     }
+
+    public List<Contacts> getContactInDateRange(LocalDate startDate, LocalDate endDate) {
+        return addressBookDBService.getContactInDateRange(startDate,endDate);
+    }
+
     private Contacts getContactData(String name) {
         return contactsList.stream()
                 .filter(contacts -> contacts.firstName.equals(name))

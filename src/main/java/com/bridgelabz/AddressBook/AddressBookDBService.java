@@ -51,6 +51,11 @@ public class AddressBookDBService {
         return 0;
     }
 
+    public List<Contacts> getContactInDateRange(LocalDate startDate, LocalDate endDate) {
+        String query =String.format("select * from contact where date_added between '%s' and '%s';",Date.valueOf(startDate),Date.valueOf(endDate));
+        return this.getContactDataUsingDB(query);
+    }
+
     private List<Contacts> getContactDataUsingDB(String query) {
         List<Contacts> contactDataList = new ArrayList<>();
         try {
@@ -91,7 +96,7 @@ public class AddressBookDBService {
                 String zip = resultSet.getString("zip");
                 String phoneNumber = resultSet.getString("phone_number");
                 String email = resultSet.getString("email");
-                contactsList.add(new Contacts(id, firstName,lastName, address,city,state,zip,phoneNumber,email));
+                contactsList.add(new Contacts(id, firstName, lastName, address, city, state, zip, phoneNumber, email));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -108,5 +113,4 @@ public class AddressBookDBService {
             e.printStackTrace();
         }
     }
-
 }
