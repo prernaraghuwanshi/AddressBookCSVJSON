@@ -6,8 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -59,4 +62,44 @@ public class AddressBookDBServiceTest {
         boolean result= addressBookSystem.checkContactInSyncWithDB("Rekha");
         Assert.assertTrue(result);
     }
+
+    @Test
+    public void givenMultipleEmployees_whenAddedToContacts_shouldSyncWithDB() throws SQLException, InterruptedException {
+        Contacts[] contactsArrayWithoutThreads = {
+                new Contacts(0, "Rakesh", "Arora", "vip road", "Mumbai", "Maharashtra", "322123", "9998547345", "jhj@gmail.com", LocalDate.now()),
+                new Contacts(0, "Sid", "Mehra", "RTY Bunglow", "Delhi", "Delhi", "400446", "657464329", "smehra@gmail.com", LocalDate.now()),
+
+        };
+        Contacts[] contactsArrayWithThreads = {
+                new Contacts(0, "Sonal", "Jain", "xyz apartments", "Bengaluru", "Karnataka", "444461", "878786542", "srewd@yahoo.com", LocalDate.now()),
+                new Contacts(0, "Priyal", "Tyagi", "qwerty lane", "Indore", "MP", "989861", "1111111111", "something@gmail.com", LocalDate.now())
+        };
+        addressBookSystem.readDataFromDB();
+        Instant start = Instant.now();
+        addressBookSystem.addMultiContactToAddressBook(Arrays.asList(contactsArrayWithoutThreads));
+        Instant end = Instant.now();
+        System.out.println("Duration Without Thread: " + Duration.between(start, end));
+        Instant threadStart = Instant.now();
+        addressBookSystem.addMultiContactToAddressBookWithThreads(Arrays.asList(contactsArrayWithThreads));
+        Thread.sleep(6000);
+        Instant threadEnd = Instant.now();
+        System.out.println("Duration With Thread: " + Duration.between(threadStart, threadEnd));
+        Assert.assertEquals(9,addressBookSystem.contactsList.size());
+    }
+
+    @Test
+    public void givenMultipleEmployees_whenAddedToDB_shouldSyncWithDB() throws SQLException, InterruptedException {
+        Contacts[] contactsArrayWithThreads = {
+                new Contacts(0, "Sonal", "Jain", "xyz apartments", "Bengaluru", "Karnataka", "444461", "878786542", "srewd@yahoo.com", LocalDate.now()),
+                new Contacts(0, "Priyal", "Tyagi", "qwerty lane", "Indore", "MP", "989861", "1111111111", "something@gmail.com", LocalDate.now())
+        };
+        addressBookSystem.readDataFromDB();
+        Instant threadStart = Instant.now();
+        addressBookSystem.addMultiContactToDBWithThreads(Arrays.asList(contactsArrayWithThreads));
+        Thread.sleep(6000);
+        Instant threadEnd = Instant.now();
+        System.out.println("Duration With Thread: " + Duration.between(threadStart, threadEnd));
+        Assert.assertEquals(11,addressBookSystem.contactsList.size());
+    }
+
 }
