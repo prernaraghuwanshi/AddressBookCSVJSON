@@ -19,8 +19,6 @@ public class AddressBookSystem {
     public enum IOType {
         FILE_IO, CSV_IO, JSON_IO, DB_IO
     }
-
-    ;
     public static List<Contacts> contactsList;
     private static AddressBookDBService addressBookDBService;
 
@@ -248,8 +246,61 @@ public class AddressBookSystem {
     }
 
     public void addContactToDB(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded) {
+        contactsList.add(addressBookDBService.addContactToDB(firstName,lastName,address,city,state,zip,phone,email,dateAdded));
+    }
+
+    public void addMultiContactToDBWithThreads(List<Contacts> contactList) {
+        Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
+        contactList.forEach(contactData -> {
+            Runnable task = () -> {
+                employeeAdditionStatus.put(contactData.hashCode(), false);
+                System.out.println("Contact Being Added Via Thread: " + Thread.currentThread().getName());
+                addContactToDB(contactData.firstName, contactData.lastName, contactData.address, contactData.city, contactData.state, contactData.zip, contactData.phoneNo, contactData.email, contactData.date_added);
+                employeeAdditionStatus.put(contactData.hashCode(), true);
+                System.out.println("Employee Added Via Thread: " + Thread.currentThread().getName());
+            };
+            Thread thread = new Thread(task, contactData.firstName);
+            thread.start();
+        });
+        System.out.println("AFTER THREADS OPERATION-------------------------\n" + contactsList);
+    }
+
+    public void addContact(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded) {
         contactsList.add(addressBookDBService.addContact(firstName,lastName,address,city,state,zip,phone,email,dateAdded));
     }
+
+    public void addMultiContactToAddressBook(List<Contacts> contactList) {
+        contactList.forEach(contactData -> {
+            System.out.println("Employee Being Added: " + contactData.firstName);
+            addContact(contactData.firstName, contactData.lastName, contactData.address, contactData.city, contactData.state, contactData.zip, contactData.phoneNo, contactData.email, contactData.date_added);
+            System.out.println("Employee Added: " + contactData.firstName);
+        });
+        System.out.println("AFTER PROCESS OPERATION-------------------------\n" + contactsList);
+    }
+
+    public void addMultiContactToAddressBookWithThreads(List<Contacts> contactList) {
+        Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
+        contactList.forEach(contactData -> {
+            Runnable task = () -> {
+                employeeAdditionStatus.put(contactData.hashCode(), false);
+                System.out.println("Contact Being Added Via Thread: " + Thread.currentThread().getName());
+                addContact(contactData.firstName, contactData.lastName, contactData.address, contactData.city, contactData.state, contactData.zip, contactData.phoneNo, contactData.email, contactData.date_added);
+                employeeAdditionStatus.put(contactData.hashCode(), true);
+                System.out.println("Employee Added Via Thread: " + Thread.currentThread().getName());
+            };
+            Thread thread = new Thread(task, contactData.firstName);
+            thread.start();
+        });
+//        while (employeeAdditionStatus.containsValue(false)) {
+//            try {
+//                Thread.sleep(100000000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+        System.out.println("AFTER THREADS OPERATION-------------------------\n" + contactsList);
+    }
+
 
     private Contacts getContactData(String name) {
         return contactsList.stream()

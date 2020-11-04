@@ -24,7 +24,7 @@ public class AddressBookDBService {
     private Connection getConnection() {
         String jdbcURL = "jdbc:mysql://localhost:3306/address_book_service?allowPublicKeyRetrieval=true&useSSL=false";
         String userName = "root";
-        String password = "root";
+        String password = "M4A4T!Hs";
         Connection con = null;
         try {
             System.out.println("Connecting to database:" + jdbcURL);
@@ -76,17 +76,75 @@ public class AddressBookDBService {
         return contactMap;
     }
 
-    public Contacts addContact(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded) {
+    public Contacts addContact(String firstName, String lastName, String address, String city, String state, String zip, String number, String email, LocalDate registeredDate) {
         int contact_id = -1;
         Connection connection = null;
         Contacts contact = null;
         connection = this.getConnection();
+
+        try (Statement statement = connection.createStatement();) {
+            String sql = String.format("insert into contact(first_name, last_name, address,city, state,zip," +
+                            "phone_number,email, date_added) values ('%s','%s','%s','%s','%s','%s','%s','%s','%s')"
+                    , firstName, lastName, address, city, state, zip, number, email, Date.valueOf(registeredDate));
+            int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
+            if (rowAffected == 1) {
+                ResultSet resultSet = statement.getGeneratedKeys();
+                if (resultSet.next()) {
+                    contact_id = resultSet.getInt(1);
+                    contact = new Contacts(contact_id, firstName, lastName, address, city, state, zip, number, email, registeredDate);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return contact;
+    }
+
+    public Contacts addContactToDB(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded) {
+        Connection[] connection = new Connection[1];
+        final Contacts[] contact = {null};
+        connection[0] = this.getConnection();
         try {
-            connection.setAutoCommit(false);
+            connection[0].setAutoCommit(false);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        int contact_id = addToContact(connection[0],firstName,lastName,address,city,state,zip,phone,email,dateAdded);
+        final boolean[] flag = {false};
+        Runnable task = () ->{
+            boolean result = addToContactListing(connection[0],contact_id);
+            if(result){
+                contact[0]= contact[0] = new Contacts(contact_id, firstName, lastName, address, city, state, zip, phone, email, dateAdded);
+            }
+            flag[0] = true;
+        };
+        Thread thread = new Thread(task);
+        thread.start();
+        if(flag[0] == false){
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            connection[0].commit();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection[0].close();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        }
+        return contact[0];
+    }
 
+    private int addToContact(Connection connection, String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded) {
+        int contact_id = -1;
         try (Statement statement = connection.createStatement()) {
             String sql = String.format("insert into contact(first_name,last_name,address,city,state,zip,phone_number,email,date_added)" +
                     "values('%s','%s','%s','%s','%s','%s','%s','%s','%s')", firstName, lastName, address, city, state, zip, phone, email, dateAdded);
@@ -96,23 +154,28 @@ public class AddressBookDBService {
                 if (resultSet.next())
                     contact_id = resultSet.getInt(1);
             }
+            return contact_id;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             try {
                 connection.rollback();
-                return contact;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+        return -1;
+    }
+
+    private boolean addToContactListing(Connection connection, int contact_id){
         try (Statement statement = connection.createStatement()) {
             int addressBookId = 1;
             String type = "Friends";
             String sql = String.format("insert into contact_listing values ('%s','%s','%s')", addressBookId, contact_id, type);
             int rowAffected = statement.executeUpdate(sql);
-            if (rowAffected == 1) {
-                contact = new Contacts(contact_id, firstName, lastName, address, city, state, zip, phone, email, dateAdded);
+            if (rowAffected != 1) {
+                return false;
             }
+            return true;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             try {
@@ -121,20 +184,7 @@ public class AddressBookDBService {
                 e.printStackTrace();
             }
         }
-        try {
-            connection.commit();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
-        }
-        return contact;
+        return false;
     }
 
     private List<Contacts> getContactDataUsingDB(String query) {
