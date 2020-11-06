@@ -317,6 +317,12 @@ public class AddressBookSystem {
         System.out.println("AFTER THREADS OPERATION-------------------------\n" + contactsList);
     }
 
+    //Delete Contact
+    public int deleteContact(String name){
+        contactsList = contactsList.stream().filter(contact -> !contact.firstName.equals(name)).collect(Collectors.toList());
+        return contactsList.size();
+    }
+
     // Get Contact details, given Name
     public Contacts getContactData(String name) {
         return contactsList.stream()
