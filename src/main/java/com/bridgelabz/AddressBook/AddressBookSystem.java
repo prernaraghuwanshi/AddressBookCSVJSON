@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class AddressBookSystem {
 
     public enum IOType {
-        FILE_IO, CSV_IO, JSON_IO, DB_IO
+        FILE_IO, CSV_IO, JSON_IO, DB_IO, REST_IO
     }
 
     public static List<Contacts> contactsList;
@@ -251,6 +251,14 @@ public class AddressBookSystem {
     // Get contacts in a city (exclusively for DB Service)
     public Map<String, Integer> getContactInCity() {
         return addressBookDBService.getContactInCity();
+    }
+
+    // Add Contact to Address Book ( for all Services)
+    public void addContactToAddressBook(Contacts contact, IOType ioType) {
+        if(ioType.equals(IOType.DB_IO))
+            this.addContactToContactTable(contact.firstName,contact.lastName,contact.address,contact.city,contact.state,contact.zip, contact.phoneNo,contact.email,contact.dateAdded);
+        else
+            contactsList.add(contact);
     }
 
     // Add One Contact to all tables in DB
