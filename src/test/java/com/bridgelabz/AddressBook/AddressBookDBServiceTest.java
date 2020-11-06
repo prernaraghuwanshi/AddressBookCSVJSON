@@ -35,7 +35,7 @@ public class AddressBookDBServiceTest {
     @Test
     public void givenNewAddressForContact_whenUpdated_shouldSyncWithDB() throws SQLException {
         addressBookSystem.readDataFromDB();
-        addressBookSystem.updateAddress("Nivedita", "shashtri ward");
+        addressBookSystem.updateAddress("Nivedita", "shashtri ward", AddressBookSystem.IOType.DB_IO);
         boolean result = addressBookSystem.checkContactInSyncWithDB("Nivedita");
         Assert.assertTrue(result);
     }
