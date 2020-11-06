@@ -13,7 +13,9 @@ public class Contacts {
 	public String zip;
 	public String phoneNo;
 	public String email;
-	public LocalDate date_added;
+	public LocalDate dateAdded;
+	public int addressBookId;
+	public String[] type;
 
 	@Override
 	public boolean equals(Object o) {
@@ -36,7 +38,7 @@ public class Contacts {
 		return Objects.hash(id, firstName, lastName, address, city, state, zip, phoneNo, email);
 	}
 
-	public Contacts(int id, String firstName, String lastName, String address, String city, String state, String zip, String phoneNo, String email, LocalDate date_added) {
+	public Contacts(int id, String firstName, String lastName, String address, String city, String state, String zip, String phoneNo, String email, LocalDate dateAdded, int addressBookId, String[] type) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -46,7 +48,22 @@ public class Contacts {
 		this.zip = zip;
 		this.phoneNo = phoneNo;
 		this.email = email;
-		this.date_added = date_added;
+		this.dateAdded = dateAdded;
+		this.addressBookId = addressBookId;
+		this.type = type;
+	}
+
+	public Contacts(int id, String firstName, String lastName, String address, String city, String state, String zip, String phoneNo, String email, LocalDate dateAdded) {
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.address = address;
+		this.city = city;
+		this.state = state;
+		this.zip = zip;
+		this.phoneNo = phoneNo;
+		this.email = email;
+		this.dateAdded = dateAdded;
 	}
 
 	public Contacts(String firstName, String lastName, String address, String city, String state, String zip,
