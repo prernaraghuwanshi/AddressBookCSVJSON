@@ -20,7 +20,7 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
-public class AddressBookIO {
+public class AddressBookIOService {
 	// Create directory to store all resources
 	public Path createDirectory() {
 		Path pathForResources = Paths.get("C:\\Users\\DIRECTOR HOME\\eclipseworkspace\\AddressBook\\Resources");
