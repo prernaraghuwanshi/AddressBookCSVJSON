@@ -236,9 +236,11 @@ public class AddressBookSystem {
     }
 
     // Update address
-    public void updateAddress(String name, String newAddress) {
-        int result = addressBookDBService.updateContactData(name, newAddress);
-        if (result == 0) return;
+    public void updateAddress(String name, String newAddress, IOType ioType) {
+        if (ioType.equals(IOType.DB_IO)) {
+            int result = addressBookDBService.updateContactData(name, newAddress);
+            if (result == 0) return;
+        }
         Contacts contactData = this.getContactData(name);
         if (contactData != null) contactData.address = newAddress;
     }
@@ -255,8 +257,8 @@ public class AddressBookSystem {
 
     // Add Contact to Address Book ( for all Services)
     public void addContactToAddressBook(Contacts contact, IOType ioType) {
-        if(ioType.equals(IOType.DB_IO))
-            this.addContactToContactTable(contact.firstName,contact.lastName,contact.address,contact.city,contact.state,contact.zip, contact.phoneNo,contact.email,contact.dateAdded);
+        if (ioType.equals(IOType.DB_IO))
+            this.addContactToContactTable(contact.firstName, contact.lastName, contact.address, contact.city, contact.state, contact.zip, contact.phoneNo, contact.email, contact.dateAdded);
         else
             contactsList.add(contact);
     }
@@ -316,7 +318,7 @@ public class AddressBookSystem {
     }
 
     // Get Contact details, given Name
-    private Contacts getContactData(String name) {
+    public Contacts getContactData(String name) {
         return contactsList.stream()
                 .filter(contacts -> contacts.firstName.equals(name))
                 .findFirst()
@@ -330,7 +332,7 @@ public class AddressBookSystem {
     }
 
     // Count entries
-    public long countEntries(){
+    public long countEntries() {
         return contactsList.size();
     }
 
