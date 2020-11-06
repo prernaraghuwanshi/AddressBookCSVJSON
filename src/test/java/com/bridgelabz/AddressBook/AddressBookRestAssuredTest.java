@@ -59,4 +59,23 @@ public class AddressBookRestAssuredTest {
         Assert.assertEquals(4,entries);
     }
 
+    @Test
+    public void givenListOfNewContacts_whenAdded_shouldMatch201ResponseAndCount(){
+        Contacts[] arrayOfContacts = getContactList();
+        addressBookSystem = new AddressBookSystem(Arrays.asList(arrayOfContacts));
+        Contacts[] arrayOfNewContacts = {
+                new Contacts(0, "Sonal", "Jain", "xyz apartments", "Bengaluru", "Karnataka", "444461", "878786542", "srewd@yahoo.com", LocalDate.now()),
+                new Contacts(0, "Priyal", "Tyagi", "qwerty lane", "Indore", "MP", "989861", "1111111111", "something@gmail.com", LocalDate.now())
+        };
+        for(Contacts contact : arrayOfNewContacts){
+            Response response = addContactToJsonServer(contact);
+            int statusCode = response.getStatusCode();
+            Assert.assertEquals(201,statusCode);
+            contact = new Gson().fromJson(response.asString(),Contacts.class);
+            addressBookSystem.addContactToAddressBook(contact,REST_IO);
+        }
+        long entries = addressBookSystem.countEntries();
+        Assert.assertEquals(6,entries);
+    }
+
 }
