@@ -77,26 +77,11 @@ public class AddressBookDBService {
     }
 
     public Contacts addContact(String firstName, String lastName, String address, String city, String state, String zip, String number, String email, LocalDate registeredDate) {
-        int contact_id = -1;
         Connection connection = null;
         Contacts contact = null;
         connection = this.getConnection();
-
-        try (Statement statement = connection.createStatement();) {
-            String sql = String.format("insert into contact(first_name, last_name, address,city, state,zip," +
-                            "phone_number,email, date_added) values ('%s','%s','%s','%s','%s','%s','%s','%s','%s')"
-                    , firstName, lastName, address, city, state, zip, number, email, Date.valueOf(registeredDate));
-            int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
-            if (rowAffected == 1) {
-                ResultSet resultSet = statement.getGeneratedKeys();
-                if (resultSet.next()) {
-                    contact_id = resultSet.getInt(1);
-                    contact = new Contacts(contact_id, firstName, lastName, address, city, state, zip, number, email, registeredDate);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        int contact_id = this.addToContact(connection, firstName, lastName, address, city, state, zip, number, email, registeredDate);
+        contact = new Contacts(contact_id, firstName, lastName, address, city, state, zip, number, email, registeredDate);
         return contact;
     }
 
@@ -112,9 +97,9 @@ public class AddressBookDBService {
         int contact_id = addToContact(connection[0], firstName, lastName, address, city, state, zip, phone, email, dateAdded);
         final boolean[] flag = {false};
         Runnable task = () -> {
-            boolean result = addToContactListing(connection[0], contact_id,addressBookId,type);
+            boolean result = addToContactListing(connection[0], contact_id, addressBookId, type);
             if (result) {
-                contact[0]  = new Contacts(contact_id, firstName, lastName, address, city, state, zip, phone, email, dateAdded,addressBookId,type);
+                contact[0] = new Contacts(contact_id, firstName, lastName, address, city, state, zip, phone, email, dateAdded, addressBookId, type);
             }
             flag[0] = true;
         };
