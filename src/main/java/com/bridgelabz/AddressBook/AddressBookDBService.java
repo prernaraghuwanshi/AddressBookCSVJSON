@@ -100,7 +100,7 @@ public class AddressBookDBService {
         return contact;
     }
 
-    public Contacts addContactToDB(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded) {
+    public Contacts addContactToDB(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded, int addressBookId, String[] type) {
         Connection[] connection = new Connection[1];
         final Contacts[] contact = {null};
         connection[0] = this.getConnection();
@@ -109,18 +109,18 @@ public class AddressBookDBService {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        int contact_id = addToContact(connection[0],firstName,lastName,address,city,state,zip,phone,email,dateAdded);
+        int contact_id = addToContact(connection[0], firstName, lastName, address, city, state, zip, phone, email, dateAdded);
         final boolean[] flag = {false};
-        Runnable task = () ->{
-            boolean result = addToContactListing(connection[0],contact_id);
-            if(result){
-                contact[0]= contact[0] = new Contacts(contact_id, firstName, lastName, address, city, state, zip, phone, email, dateAdded);
+        Runnable task = () -> {
+            boolean result = addToContactListing(connection[0], contact_id,addressBookId,type);
+            if (result) {
+                contact[0]  = new Contacts(contact_id, firstName, lastName, address, city, state, zip, phone, email, dateAdded,addressBookId,type);
             }
             flag[0] = true;
         };
         Thread thread = new Thread(task);
         thread.start();
-        if(flag[0] == false){
+        if (flag[0] == false) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -166,14 +166,14 @@ public class AddressBookDBService {
         return -1;
     }
 
-    private boolean addToContactListing(Connection connection, int contact_id){
+    private boolean addToContactListing(Connection connection, int contact_id, int addressBookId, String[] type) {
         try (Statement statement = connection.createStatement()) {
-            int addressBookId = 1;
-            String type = "Friends";
-            String sql = String.format("insert into contact_listing values ('%s','%s','%s')", addressBookId, contact_id, type);
-            int rowAffected = statement.executeUpdate(sql);
-            if (rowAffected != 1) {
-                return false;
+            for (int i = 0; i < type.length; i++) {
+                String sql = String.format("insert into contact_listing values ('%s','%s','%s')", addressBookId, contact_id, type[i]);
+                int rowAffected = statement.executeUpdate(sql);
+                if (rowAffected != 1) {
+                    return false;
+                }
             }
             return true;
         } catch (SQLException throwables) {
