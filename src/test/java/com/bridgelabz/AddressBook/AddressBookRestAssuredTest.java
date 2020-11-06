@@ -3,11 +3,15 @@ package com.bridgelabz.AddressBook;
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+
+import static com.bridgelabz.AddressBook.AddressBookSystem.IOType.REST_IO;
 
 public class AddressBookRestAssuredTest {
     AddressBookSystem addressBookSystem;
@@ -25,12 +29,34 @@ public class AddressBookRestAssuredTest {
         return arrayOfContacts;
     }
 
+    private Response addContactToJsonServer(Contacts contact) {
+        String contactJson = new Gson().toJson(contact);
+        RequestSpecification request = RestAssured.given();
+        request.header("Content-Type","application/json");
+        request.body(contactJson);
+        return request.post("/contacts");
+    }
+
     @Test
     public void givenContactDataInJSONServer_whenRetrieved_shouldMatchTheCount() {
         Contacts[] arrayOfContacts = getContactList();
         addressBookSystem = new AddressBookSystem(Arrays.asList(arrayOfContacts));
         long entries = addressBookSystem.countEntries();
         Assert.assertEquals(3,entries);
+    }
+
+    @Test
+    public void givenNewContact_whenAdded_shouldMatch201ResponseAndCount(){
+        Contacts[] arrayOfContacts = getContactList();
+        addressBookSystem = new AddressBookSystem(Arrays.asList(arrayOfContacts));
+        Contacts contact = new Contacts(4,"Shreya","Mehra","SN Lane","Kolkata","West Bengal","711003","2323232323","shreyamehra@gmail.com", LocalDate.now());
+        Response response = addContactToJsonServer(contact);
+        int statusCode = response.getStatusCode();
+        Assert.assertEquals(201,statusCode);
+        contact = new Gson().fromJson(response.asString(),Contacts.class);
+        addressBookSystem.addContactToAddressBook(contact,REST_IO);
+        long entries = addressBookSystem.countEntries();
+        Assert.assertEquals(4,entries);
     }
 
 }
