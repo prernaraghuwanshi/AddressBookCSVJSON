@@ -189,23 +189,25 @@ public class AddressBookSystem {
     }
 
     // Write Data to File, CSV file or JSON file
-    public void writeData(String addressBookName, IOType iotype) {
+    public void writeData(String addressBookName, IOType iotype) throws IOTypeException {
         if (iotype.equals(IOType.FILE_IO))
             new AddressBookIOService().writeDataToFile(addressBookMap.get(addressBookName).contactList, addressBookName);
         else if (iotype.equals(IOType.CSV_IO))
             try {
                 new AddressBookIOService().writeDataToCSV(addressBookMap.get(addressBookName).contactList, addressBookName);
             } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
+                throw new IOTypeException("CSV File Writing Problem",IOTypeException.ExceptionType.CSV_FILE_ISSUE);
             }
         else if (iotype.equals(IOType.JSON_IO))
             try {
                 new AddressBookIOService().writeDataToJSON(addressBookMap.get(addressBookName).contactList, addressBookName);
             } catch (IOException e) {
+                throw new IOTypeException("JSON File Writing issue",IOTypeException.ExceptionType.JSON_FILE_ISSUE);
             }
     }
 
     // Read data from file, CSV file or JSON file
-    public ArrayList<Contacts> readData(String addressBookName, IOType iotype) throws SQLException {
+    public ArrayList<Contacts> readData(String addressBookName, IOType iotype) throws IOTypeException {
         if (iotype.equals(IOType.FILE_IO)) {
             ArrayList<Contacts> readFromFileContactList = new AddressBookIOService().readDataFromFile(addressBookName);
             return readFromFileContactList;
@@ -214,6 +216,7 @@ public class AddressBookSystem {
             try {
                 readFromCSVContactList = new AddressBookIOService().readDataFromCSV(addressBookName);
             } catch (IOException e) {
+                throw new IOTypeException("CSV File Reading Problem",IOTypeException.ExceptionType.CSV_FILE_ISSUE);
             }
             return readFromCSVContactList;
         } else if (iotype.equals(IOType.JSON_IO)) {
@@ -221,6 +224,7 @@ public class AddressBookSystem {
             try {
                 readFromJSONContactList = new AddressBookIOService().readDataFromJSON(addressBookName);
             } catch (IOException e) {
+                throw new IOTypeException("JSON File Reading issue",IOTypeException.ExceptionType.JSON_FILE_ISSUE);
             }
             return readFromJSONContactList;
         } else if (iotype.equals(IOType.DB_IO)) {
@@ -230,15 +234,22 @@ public class AddressBookSystem {
     }
 
     // Read data from Database
-    public List<Contacts> readDataFromDB() throws SQLException {
-        contactsList = addressBookDBService.readData();
+    public List<Contacts> readDataFromDB()  {
+        try {
+            contactsList = addressBookDBService.readData();
+        } catch (AddressBookException e) {
+        }
         return contactsList;
     }
 
     // Update address
     public void updateAddress(String name, String newAddress, IOType ioType) {
         if (ioType.equals(IOType.DB_IO)) {
-            int result = addressBookDBService.updateContactData(name, newAddress);
+            int result = 0;
+            try {
+                result = addressBookDBService.updateContactData(name, newAddress);
+            } catch (AddressBookException e) {
+            }
             if (result == 0) return;
         }
         Contacts contactData = this.getContactData(name);
@@ -247,12 +258,20 @@ public class AddressBookSystem {
 
     // Get contacts in date range (exclusively for DB Service)
     public List<Contacts> getContactInDateRange(LocalDate startDate, LocalDate endDate) {
-        return addressBookDBService.getContactInDateRange(startDate, endDate);
+        try {
+            return addressBookDBService.getContactInDateRange(startDate, endDate);
+        } catch (AddressBookException e) {
+        }
+        return null;
     }
 
     // Get contacts in a city (exclusively for DB Service)
     public Map<String, Integer> getContactInCity() {
-        return addressBookDBService.getContactInCity();
+        try {
+            return addressBookDBService.getContactInCity();
+        } catch (AddressBookException e) {
+        }
+        return null;
     }
 
     // Add Contact to Address Book ( for all Services)
@@ -265,7 +284,10 @@ public class AddressBookSystem {
 
     // Add One Contact to all tables in DB
     public void addContactToEntireDB(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded, int addressBookId, String[] type) {
-        contactsList.add(addressBookDBService.addContactToDB(firstName, lastName, address, city, state, zip, phone, email, dateAdded, addressBookId, type));
+        try {
+            contactsList.add(addressBookDBService.addContactToDB(firstName, lastName, address, city, state, zip, phone, email, dateAdded, addressBookId, type));
+        } catch (AddressBookException e) {
+        }
     }
 
     // Add List of Contacts to all tables in DB using Threads
@@ -287,7 +309,10 @@ public class AddressBookSystem {
 
     // Add One Contact to Contact table in DB
     public void addContactToContactTable(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded) {
-        contactsList.add(addressBookDBService.addContact(firstName, lastName, address, city, state, zip, phone, email, dateAdded));
+        try {
+            contactsList.add(addressBookDBService.addContact(firstName, lastName, address, city, state, zip, phone, email, dateAdded));
+        } catch (AddressBookException e) {
+        }
     }
 
     // Add List of Contacts to Contact table in DB
@@ -333,7 +358,11 @@ public class AddressBookSystem {
 
     // Check if DB is in sync with Local ContactList
     public boolean checkContactInSyncWithDB(String name) {
-        List<Contacts> contactList = addressBookDBService.getContactData(name);
+        List<Contacts> contactList = null;
+        try {
+            contactList = addressBookDBService.getContactData(name);
+        } catch (AddressBookException e) {
+        }
         return contactList.get(0).equals(getContactData(name));
     }
 
@@ -341,5 +370,4 @@ public class AddressBookSystem {
     public long countEntries() {
         return contactsList.size();
     }
-
 }

@@ -160,4 +160,3 @@ public class Contacts {
 		this.zip = zip;
 	}
 }
-

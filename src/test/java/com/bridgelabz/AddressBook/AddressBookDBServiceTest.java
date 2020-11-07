@@ -58,7 +58,7 @@ public class AddressBookDBServiceTest {
     @Test
     public void givenNewContact_whenAdded_shouldBeInSyncWithDB() throws SQLException {
         addressBookSystem.readDataFromDB();
-        addressBookSystem.addContactToEntireDB("Rekha", "Verma", "qwerty lane", "Jaipur", "Rajasthan", "234567", "2345678901", "sdfgth@yahoo.com", LocalDate.now(), 101, new String[]{"Friends", "Family"});
+        addressBookSystem.addContactToEntireDB("Rahul", "Verma", "qwerty lane", "Jaipur", "Rajasthan", "234567", "2345678901", "sdfgth@yahoo.com", LocalDate.now(), 101, new String[]{"Friends", "Family"});
         boolean result = addressBookSystem.checkContactInSyncWithDB("Rekha");
         Assert.assertTrue(result);
     }
