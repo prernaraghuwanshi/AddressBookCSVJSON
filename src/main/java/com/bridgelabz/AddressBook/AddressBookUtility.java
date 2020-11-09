@@ -135,14 +135,14 @@ public class AddressBookUtility {
                     s7.nextLine();
                     System.out.println("Enter name of address book for which you need to write data: ");
                     String nameOfAddressBook = s7.nextLine();
-                    ArrayList<Contacts> dataFromIO = new ArrayList<Contacts>();
+                    ArrayList<Contact> dataFromIO = new ArrayList<Contact>();
                     if (optionRead == 1)
                         dataFromIO = ads.readData(nameOfAddressBook, AddressBookSystem.IOType.FILE_IO);
                     else if (optionRead == 2)
                         dataFromIO = ads.readData(nameOfAddressBook, AddressBookSystem.IOType.CSV_IO);
                     else if (optionRead == 3)
                         dataFromIO = ads.readData(nameOfAddressBook, AddressBookSystem.IOType.JSON_IO);
-                    for (Contacts contact : dataFromIO) {
+                    for (Contact contact : dataFromIO) {
                         System.out.println("-----Displaying Contact-----");
                         System.out.println("First Name: " + contact.getFirstName());
                         System.out.println("Last Name: " + contact.getLastName());

@@ -3,7 +3,7 @@ package com.bridgelabz.AddressBook;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Contacts {
+public class Contact {
 	public int id;
 	public String firstName;
 	public String lastName;
@@ -21,16 +21,16 @@ public class Contacts {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		Contacts contacts = (Contacts) o;
-		return id == contacts.id &&
-				Objects.equals(firstName, contacts.firstName) &&
-				Objects.equals(lastName, contacts.lastName) &&
-				Objects.equals(address, contacts.address) &&
-				Objects.equals(city, contacts.city) &&
-				Objects.equals(state, contacts.state) &&
-				Objects.equals(zip, contacts.zip) &&
-				Objects.equals(phoneNo, contacts.phoneNo) &&
-				Objects.equals(email, contacts.email);
+		Contact contact = (Contact) o;
+		return id == contact.id &&
+				Objects.equals(firstName, contact.firstName) &&
+				Objects.equals(lastName, contact.lastName) &&
+				Objects.equals(address, contact.address) &&
+				Objects.equals(city, contact.city) &&
+				Objects.equals(state, contact.state) &&
+				Objects.equals(zip, contact.zip) &&
+				Objects.equals(phoneNo, contact.phoneNo) &&
+				Objects.equals(email, contact.email);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class Contacts {
 		return Objects.hash(id, firstName, lastName, address, city, state, zip, phoneNo, email);
 	}
 
-	public Contacts(int id, String firstName, String lastName, String address, String city, String state, String zip, String phoneNo, String email, LocalDate dateAdded, int addressBookId, String[] type) {
+	public Contact(int id, String firstName, String lastName, String address, String city, String state, String zip, String phoneNo, String email, LocalDate dateAdded, int addressBookId, String[] type) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -53,7 +53,7 @@ public class Contacts {
 		this.type = type;
 	}
 
-	public Contacts(int id, String firstName, String lastName, String address, String city, String state, String zip, String phoneNo, String email, LocalDate dateAdded) {
+	public Contact(int id, String firstName, String lastName, String address, String city, String state, String zip, String phoneNo, String email, LocalDate dateAdded) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -66,8 +66,8 @@ public class Contacts {
 		this.dateAdded = dateAdded;
 	}
 
-	public Contacts(String firstName, String lastName, String address, String city, String state, String zip,
-					String phoneNo, String email) {
+	public Contact(String firstName, String lastName, String address, String city, String state, String zip,
+				   String phoneNo, String email) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.address = address;
@@ -78,7 +78,7 @@ public class Contacts {
 		this.email = email;
 	}
 
-	public Contacts(int id, String firstName, String lastName, String address, String city, String state, String zip, String phoneNo, String email) {
+	public Contact(int id, String firstName, String lastName, String address, String city, String state, String zip, String phoneNo, String email) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;

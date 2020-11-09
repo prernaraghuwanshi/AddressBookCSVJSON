@@ -8,15 +8,15 @@ import java.util.stream.Collectors;
 
 public class AddressBookMain {
 	Scanner sc = new Scanner(System.in);
-	public ArrayList<Contacts> contactList;
-	public HashMap<String, Contacts> contactMap;
+	public ArrayList<Contact> contactList;
+	public HashMap<String, Contact> contactMap;
 	HashMap<String, ArrayList<String>> cityMap;
 	HashMap<String, ArrayList<String>> stateMap;
 
 	// Constructor
 	public AddressBookMain() {
-		contactList = new ArrayList<Contacts>();
-		contactMap = new HashMap<String, Contacts>();
+		contactList = new ArrayList<Contact>();
+		contactMap = new HashMap<String, Contact>();
 		cityMap = new HashMap<String, ArrayList<String>>();
 		stateMap = new HashMap<String, ArrayList<String>>();
 	}
@@ -26,7 +26,7 @@ public class AddressBookMain {
 		System.out.println("-----Add Contact Details-----");
 		System.out.println("Enter First Name: ");
 		String firstName = sc.nextLine();
-		List<String> names = contactList.stream().map(Contacts::getFirstName).collect(Collectors.toList());
+		List<String> names = contactList.stream().map(Contact::getFirstName).collect(Collectors.toList());
 		boolean checkDuplicateName = names.stream().anyMatch(name -> firstName.equals(name));
 		if (checkDuplicateName == true) {
 			System.out.println("First Name exists in address book!");
@@ -46,7 +46,7 @@ public class AddressBookMain {
 		String phone = sc.nextLine();
 		System.out.println("Enter Email Address: ");
 		String email = sc.nextLine();
-		Contacts c = new Contacts(firstName, lastName, address, city, state, zip, phone, email);
+		Contact c = new Contact(firstName, lastName, address, city, state, zip, phone, email);
 		contactList.add(c);
 		contactMap.put(firstName, c);
 		if (!cityMap.isEmpty() && cityMap.containsKey(city)) {
@@ -75,7 +75,7 @@ public class AddressBookMain {
 	public void editContact(String firstNameEdit) {
 		System.out.println("-----Edit Contact-----");
 		if (contactMap.containsKey(firstNameEdit)) {
-			Contacts cedit = contactMap.get(firstNameEdit);
+			Contact cedit = contactMap.get(firstNameEdit);
 			System.out.println("Enter First Name: ");
 			cedit.firstName = sc.nextLine();
 			System.out.println("Enter Last Name: ");
@@ -118,7 +118,7 @@ public class AddressBookMain {
 	public void deleteContact(String firstName) {
 		System.out.println("-----Deleting Contact-----");
 		if (contactMap.containsKey(firstName)) {
-			Contacts c = contactMap.get(firstName);
+			Contact c = contactMap.get(firstName);
 			contactMap.remove(firstName);
 			contactList.remove(c);
 			System.out.println("-----Contact Deleted Successfully-----");

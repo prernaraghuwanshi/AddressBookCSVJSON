@@ -4,7 +4,6 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,7 +14,7 @@ public class AddressBookSystem {
         FILE_IO, CSV_IO, JSON_IO, DB_IO, REST_IO
     }
 
-    public static List<Contacts> contactsList;
+    public static List<Contact> contactList;
     private static AddressBookDBService addressBookDBService;
 
     HashMap<String, AddressBookMain> addressBookMap;
@@ -28,9 +27,9 @@ public class AddressBookSystem {
     }
 
     //Parameterized Constructor
-    public AddressBookSystem(List<Contacts> contactsList) {
+    public AddressBookSystem(List<Contact> contactList) {
         this();
-        this.contactsList = new ArrayList<>(contactsList);
+        this.contactList = new ArrayList<>(contactList);
     }
 
     // Add address book to Address Book System (exclusively for Console Service)
@@ -82,10 +81,10 @@ public class AddressBookSystem {
     public void getPersonByCity(String cityName) {
         for (Map.Entry<String, AddressBookMain> entry : addressBookMap.entrySet()) {
             AddressBookMain addr = entry.getValue();
-            List<Contacts> contactsList = addr.contactList.stream().filter(contact -> contact.city.equals(cityName))
+            List<Contact> contactList = addr.contactList.stream().filter(contact -> contact.city.equals(cityName))
                     .collect(Collectors.toList());
             System.out.println("Person from " + cityName + " in Address Book " + entry.getKey() + " are: ");
-            contactsList.forEach(contact -> System.out.println(contact.firstName + " " + contact.lastName));
+            contactList.forEach(contact -> System.out.println(contact.firstName + " " + contact.lastName));
         }
     }
 
@@ -93,10 +92,10 @@ public class AddressBookSystem {
     public void getPersonByState(String stateName) {
         for (Map.Entry<String, AddressBookMain> entry : addressBookMap.entrySet()) {
             AddressBookMain addr = entry.getValue();
-            List<Contacts> contactsList = addr.contactList.stream().filter(contact -> contact.state.equals(stateName))
+            List<Contact> contactList = addr.contactList.stream().filter(contact -> contact.state.equals(stateName))
                     .collect(Collectors.toList());
             System.out.println("Person from " + stateName + " in Address Book " + entry.getKey() + " are: ");
-            contactsList.forEach(contact -> System.out.println(contact.firstName + " " + contact.lastName));
+            contactList.forEach(contact -> System.out.println(contact.firstName + " " + contact.lastName));
         }
     }
 
@@ -152,7 +151,7 @@ public class AddressBookSystem {
     public void sortByName() {
         for (Map.Entry<String, AddressBookMain> entry : addressBookMap.entrySet()) {
             AddressBookMain addr = entry.getValue();
-            List<Contacts> sortedList = addr.contactList.stream().sorted(Comparator.comparing(Contacts::getFirstName))
+            List<Contact> sortedList = addr.contactList.stream().sorted(Comparator.comparing(Contact::getFirstName))
                     .collect(Collectors.toList());
             sortedList.forEach(contact -> System.out.println(contact.firstName + " " + contact.lastName));
         }
@@ -162,7 +161,7 @@ public class AddressBookSystem {
     public void sortByCity() {
         for (Map.Entry<String, AddressBookMain> entry : addressBookMap.entrySet()) {
             AddressBookMain addr = entry.getValue();
-            List<Contacts> sortedList = addr.contactList.stream().sorted(Comparator.comparing(Contacts::getCity))
+            List<Contact> sortedList = addr.contactList.stream().sorted(Comparator.comparing(Contact::getCity))
                     .collect(Collectors.toList());
             sortedList.forEach(contact -> System.out.println(contact.firstName + " " + contact.lastName));
         }
@@ -172,7 +171,7 @@ public class AddressBookSystem {
     public void sortByState() {
         for (Map.Entry<String, AddressBookMain> entry : addressBookMap.entrySet()) {
             AddressBookMain addr = entry.getValue();
-            List<Contacts> sortedList = addr.contactList.stream().sorted(Comparator.comparing(Contacts::getState))
+            List<Contact> sortedList = addr.contactList.stream().sorted(Comparator.comparing(Contact::getState))
                     .collect(Collectors.toList());
             sortedList.forEach(contact -> System.out.println(contact.firstName + " " + contact.lastName));
         }
@@ -182,7 +181,7 @@ public class AddressBookSystem {
     public void sortByZip() {
         for (Map.Entry<String, AddressBookMain> entry : addressBookMap.entrySet()) {
             AddressBookMain addr = entry.getValue();
-            List<Contacts> sortedList = addr.contactList.stream().sorted(Comparator.comparing(Contacts::getZip))
+            List<Contact> sortedList = addr.contactList.stream().sorted(Comparator.comparing(Contact::getZip))
                     .collect(Collectors.toList());
             sortedList.forEach(contact -> System.out.println(contact.firstName + " " + contact.lastName));
         }
@@ -207,12 +206,12 @@ public class AddressBookSystem {
     }
 
     // Read data from file, CSV file or JSON file
-    public ArrayList<Contacts> readData(String addressBookName, IOType iotype) throws IOTypeException {
+    public ArrayList<Contact> readData(String addressBookName, IOType iotype) throws IOTypeException {
         if (iotype.equals(IOType.FILE_IO)) {
-            ArrayList<Contacts> readFromFileContactList = new AddressBookIOService().readDataFromFile(addressBookName);
+            ArrayList<Contact> readFromFileContactList = new AddressBookIOService().readDataFromFile(addressBookName);
             return readFromFileContactList;
         } else if (iotype.equals(IOType.CSV_IO)) {
-            ArrayList<Contacts> readFromCSVContactList = null;
+            ArrayList<Contact> readFromCSVContactList = null;
             try {
                 readFromCSVContactList = new AddressBookIOService().readDataFromCSV(addressBookName);
             } catch (IOException e) {
@@ -220,7 +219,7 @@ public class AddressBookSystem {
             }
             return readFromCSVContactList;
         } else if (iotype.equals(IOType.JSON_IO)) {
-            ArrayList<Contacts> readFromJSONContactList = null;
+            ArrayList<Contact> readFromJSONContactList = null;
             try {
                 readFromJSONContactList = new AddressBookIOService().readDataFromJSON(addressBookName);
             } catch (IOException e) {
@@ -228,18 +227,18 @@ public class AddressBookSystem {
             }
             return readFromJSONContactList;
         } else if (iotype.equals(IOType.DB_IO)) {
-            return (ArrayList<Contacts>) readDataFromDB();
+            return (ArrayList<Contact>) readDataFromDB();
         }
         return null;
     }
 
     // Read data from Database
-    public List<Contacts> readDataFromDB()  {
+    public List<Contact> readDataFromDB()  {
         try {
-            contactsList = addressBookDBService.readData();
+            contactList = addressBookDBService.readData();
         } catch (AddressBookException e) {
         }
-        return contactsList;
+        return contactList;
     }
 
     // Update address
@@ -252,12 +251,12 @@ public class AddressBookSystem {
             }
             if (result == 0) return;
         }
-        Contacts contactData = this.getContactData(name);
+        Contact contactData = this.getContactData(name);
         if (contactData != null) contactData.address = newAddress;
     }
 
     // Get contacts in date range (exclusively for DB Service)
-    public List<Contacts> getContactInDateRange(LocalDate startDate, LocalDate endDate) {
+    public List<Contact> getContactInDateRange(LocalDate startDate, LocalDate endDate) {
         try {
             return addressBookDBService.getContactInDateRange(startDate, endDate);
         } catch (AddressBookException e) {
@@ -275,23 +274,23 @@ public class AddressBookSystem {
     }
 
     // Add Contact to Address Book ( for all Services)
-    public void addContactToAddressBook(Contacts contact, IOType ioType) {
+    public void addContactToAddressBook(Contact contact, IOType ioType) {
         if (ioType.equals(IOType.DB_IO))
             this.addContactToContactTable(contact.firstName, contact.lastName, contact.address, contact.city, contact.state, contact.zip, contact.phoneNo, contact.email, contact.dateAdded);
         else
-            contactsList.add(contact);
+            contactList.add(contact);
     }
 
     // Add One Contact to all tables in DB
     public void addContactToEntireDB(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded, int addressBookId, String[] type) {
         try {
-            contactsList.add(addressBookDBService.addContactToDB(firstName, lastName, address, city, state, zip, phone, email, dateAdded, addressBookId, type));
+            contactList.add(addressBookDBService.addContactToDB(firstName, lastName, address, city, state, zip, phone, email, dateAdded, addressBookId, type));
         } catch (AddressBookException e) {
         }
     }
 
     // Add List of Contacts to all tables in DB using Threads
-    public void addMultiContactToEntireDBWithThreads(List<Contacts> contactList) {
+    public void addMultiContactToEntireDBWithThreads(List<Contact> contactList) {
         Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
         contactList.forEach(contactData -> {
             Runnable task = () -> {
@@ -304,29 +303,29 @@ public class AddressBookSystem {
             Thread thread = new Thread(task, contactData.firstName);
             thread.start();
         });
-        System.out.println("AFTER THREADS OPERATION-------------------------\n" + contactsList);
+        System.out.println("AFTER THREADS OPERATION-------------------------\n" + AddressBookSystem.contactList);
     }
 
     // Add One Contact to Contact table in DB
     public void addContactToContactTable(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded) {
         try {
-            contactsList.add(addressBookDBService.addContact(firstName, lastName, address, city, state, zip, phone, email, dateAdded));
+            contactList.add(addressBookDBService.addContact(firstName, lastName, address, city, state, zip, phone, email, dateAdded));
         } catch (AddressBookException e) {
         }
     }
 
     // Add List of Contacts to Contact table in DB
-    public void addMultiContactToContactTable(List<Contacts> contactList) {
+    public void addMultiContactToContactTable(List<Contact> contactList) {
         contactList.forEach(contactData -> {
             System.out.println("Employee Being Added: " + contactData.firstName);
             addContactToContactTable(contactData.firstName, contactData.lastName, contactData.address, contactData.city, contactData.state, contactData.zip, contactData.phoneNo, contactData.email, contactData.dateAdded);
             System.out.println("Employee Added: " + contactData.firstName);
         });
-        System.out.println("AFTER PROCESS OPERATION-------------------------\n" + contactsList);
+        System.out.println("AFTER PROCESS OPERATION-------------------------\n" + AddressBookSystem.contactList);
     }
 
     // Add List of Contacts to Contact table in DB using Threads
-    public void addMultiContactToContactTableWithThreads(List<Contacts> contactList) {
+    public void addMultiContactToContactTableWithThreads(List<Contact> contactList) {
         Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
         contactList.forEach(contactData -> {
             Runnable task = () -> {
@@ -339,18 +338,18 @@ public class AddressBookSystem {
             Thread thread = new Thread(task, contactData.firstName);
             thread.start();
         });
-        System.out.println("AFTER THREADS OPERATION-------------------------\n" + contactsList);
+        System.out.println("AFTER THREADS OPERATION-------------------------\n" + AddressBookSystem.contactList);
     }
 
     //Delete Contact
     public int deleteContact(String name){
-        contactsList = contactsList.stream().filter(contact -> !contact.firstName.equals(name)).collect(Collectors.toList());
-        return contactsList.size();
+        contactList = contactList.stream().filter(contact -> !contact.firstName.equals(name)).collect(Collectors.toList());
+        return contactList.size();
     }
 
     // Get Contact details, given Name
-    public Contacts getContactData(String name) {
-        return contactsList.stream()
+    public Contact getContactData(String name) {
+        return contactList.stream()
                 .filter(contacts -> contacts.firstName.equals(name))
                 .findFirst()
                 .orElse(null);
@@ -358,7 +357,7 @@ public class AddressBookSystem {
 
     // Check if DB is in sync with Local ContactList
     public boolean checkContactInSyncWithDB(String name) {
-        List<Contacts> contactList = null;
+        List<Contact> contactList = null;
         try {
             contactList = addressBookDBService.getContactData(name);
         } catch (AddressBookException e) {
@@ -368,6 +367,6 @@ public class AddressBookSystem {
 
     // Count entries
     public long countEntries() {
-        return contactsList.size();
+        return contactList.size();
     }
 }

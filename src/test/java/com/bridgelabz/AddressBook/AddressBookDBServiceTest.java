@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AddressBookDBServiceTest {
     AddressBookSystem addressBookSystem;
-    ArrayList<Contacts> contactsList;
+    ArrayList<Contact> contactList;
 
     @Before
     public void initialize() {
@@ -28,7 +28,7 @@ public class AddressBookDBServiceTest {
 
     @Test
     public void givenEmployeeInDB_whenRetrieved_shouldMatchEmployeeCount() throws SQLException {
-        List<Contacts> contactList = addressBookSystem.readDataFromDB();
+        List<Contact> contactList = addressBookSystem.readDataFromDB();
         Assert.assertEquals(4, contactList.size());
     }
 
@@ -43,8 +43,8 @@ public class AddressBookDBServiceTest {
     @Test
     public void givenContactDB_whenRetrievingContactsInDateRange_shouldGiveCorrectCount() throws SQLException {
         addressBookSystem.readDataFromDB();
-        List<Contacts> contactsListInDateRange = addressBookSystem.getContactInDateRange(LocalDate.of(2019, 01, 01), LocalDate.of(2020, 12, 31));
-        Assert.assertEquals(3, contactsListInDateRange.size());
+        List<Contact> contactListInDateRange = addressBookSystem.getContactInDateRange(LocalDate.of(2019, 01, 01), LocalDate.of(2020, 12, 31));
+        Assert.assertEquals(3, contactListInDateRange.size());
     }
 
     @Test
@@ -65,41 +65,41 @@ public class AddressBookDBServiceTest {
 
     @Test
     public void givenMultipleEmployees_whenAddedToContacts_shouldSyncWithDB() throws SQLException, InterruptedException {
-        Contacts[] contactsArrayWithoutThreads = {
-                new Contacts(0, "Rakesh", "Arora", "vip road", "Mumbai", "Maharashtra", "322123", "9998547345", "jhj@gmail.com", LocalDate.now()),
-                new Contacts(0, "Sid", "Mehra", "RTY Bunglow", "Delhi", "Delhi", "400446", "657464329", "smehra@gmail.com", LocalDate.now()),
+        Contact[] contactArrayWithoutThreads = {
+                new Contact(0, "Rakesh", "Arora", "vip road", "Mumbai", "Maharashtra", "322123", "9998547345", "jhj@gmail.com", LocalDate.now()),
+                new Contact(0, "Sid", "Mehra", "RTY Bunglow", "Delhi", "Delhi", "400446", "657464329", "smehra@gmail.com", LocalDate.now()),
 
         };
-        Contacts[] contactsArrayWithThreads = {
-                new Contacts(0, "Sonal", "Jain", "xyz apartments", "Bengaluru", "Karnataka", "444461", "878786542", "srewd@yahoo.com", LocalDate.now()),
-                new Contacts(0, "Priyal", "Tyagi", "qwerty lane", "Indore", "MP", "989861", "1111111111", "something@gmail.com", LocalDate.now())
+        Contact[] contactArrayWithThreads = {
+                new Contact(0, "Sonal", "Jain", "xyz apartments", "Bengaluru", "Karnataka", "444461", "878786542", "srewd@yahoo.com", LocalDate.now()),
+                new Contact(0, "Priyal", "Tyagi", "qwerty lane", "Indore", "MP", "989861", "1111111111", "something@gmail.com", LocalDate.now())
         };
         addressBookSystem.readDataFromDB();
         Instant start = Instant.now();
-        addressBookSystem.addMultiContactToContactTable(Arrays.asList(contactsArrayWithoutThreads));
+        addressBookSystem.addMultiContactToContactTable(Arrays.asList(contactArrayWithoutThreads));
         Instant end = Instant.now();
         System.out.println("Duration Without Thread: " + Duration.between(start, end));
         Instant threadStart = Instant.now();
-        addressBookSystem.addMultiContactToContactTableWithThreads(Arrays.asList(contactsArrayWithThreads));
+        addressBookSystem.addMultiContactToContactTableWithThreads(Arrays.asList(contactArrayWithThreads));
         Thread.sleep(6000);
         Instant threadEnd = Instant.now();
         System.out.println("Duration With Thread: " + Duration.between(threadStart, threadEnd));
-        Assert.assertEquals(9, addressBookSystem.contactsList.size());
+        Assert.assertEquals(9, addressBookSystem.contactList.size());
     }
 
     @Test
     public void givenMultipleEmployees_whenAddedToDB_shouldSyncWithDB() throws SQLException, InterruptedException {
-        Contacts[] contactsArrayWithThreads = {
-                new Contacts(0, "Sonal", "Jain", "xyz apartments", "Bengaluru", "Karnataka", "444461", "878786542", "srewd@yahoo.com", LocalDate.now(),102, new String[]{"Colleague"}),
-                new Contacts(0, "Priyal", "Tyagi", "qwerty lane", "Indore", "MP", "989861", "1111111111", "something@gmail.com", LocalDate.now(),103, new String[]{"Family", "Friends"})
+        Contact[] contactArrayWithThreads = {
+                new Contact(0, "Sonal", "Jain", "xyz apartments", "Bengaluru", "Karnataka", "444461", "878786542", "srewd@yahoo.com", LocalDate.now(),102, new String[]{"Colleague"}),
+                new Contact(0, "Priyal", "Tyagi", "qwerty lane", "Indore", "MP", "989861", "1111111111", "something@gmail.com", LocalDate.now(),103, new String[]{"Family", "Friends"})
         };
         addressBookSystem.readDataFromDB();
         Instant threadStart = Instant.now();
-        addressBookSystem.addMultiContactToEntireDBWithThreads(Arrays.asList(contactsArrayWithThreads));
+        addressBookSystem.addMultiContactToEntireDBWithThreads(Arrays.asList(contactArrayWithThreads));
         Thread.sleep(6000);
         Instant threadEnd = Instant.now();
         System.out.println("Duration With Thread: " + Duration.between(threadStart, threadEnd));
-        Assert.assertEquals(13, addressBookSystem.contactsList.size());
+        Assert.assertEquals(13, addressBookSystem.contactList.size());
     }
 
 }

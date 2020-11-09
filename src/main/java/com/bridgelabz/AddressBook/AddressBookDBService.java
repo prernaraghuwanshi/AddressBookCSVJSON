@@ -40,7 +40,7 @@ public class AddressBookDBService {
     }
 
     //  Show data in DB
-    public List<Contacts> readData() throws AddressBookException {
+    public List<Contact> readData() throws AddressBookException {
         return this.getContactDataUsingDB(query);
     }
 
@@ -58,7 +58,7 @@ public class AddressBookDBService {
     }
 
     // All contacts added in a date range
-    public List<Contacts> getContactInDateRange(LocalDate startDate, LocalDate endDate) throws AddressBookException {
+    public List<Contact> getContactInDateRange(LocalDate startDate, LocalDate endDate) throws AddressBookException {
         String query = String.format("select * from contact where date_added between '%s' and '%s';", Date.valueOf(startDate), Date.valueOf(endDate));
         return this.getContactDataUsingDB(query);
     }
@@ -83,19 +83,19 @@ public class AddressBookDBService {
     }
 
     // Add to Contacts table
-    public Contacts addContact(String firstName, String lastName, String address, String city, String state, String zip, String number, String email, LocalDate registeredDate) throws AddressBookException {
+    public Contact addContact(String firstName, String lastName, String address, String city, String state, String zip, String number, String email, LocalDate registeredDate) throws AddressBookException {
         Connection connection = null;
-        Contacts contact = null;
+        Contact contact = null;
         connection = this.getConnection();
         int contact_id = this.addToContact(connection, firstName, lastName, address, city, state, zip, number, email, registeredDate);
-        contact = new Contacts(contact_id, firstName, lastName, address, city, state, zip, number, email, registeredDate);
+        contact = new Contact(contact_id, firstName, lastName, address, city, state, zip, number, email, registeredDate);
         return contact;
     }
 
     // Add to Contacts and Contact_listing table
-    public Contacts addContactToDB(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded, int addressBookId, String[] type) throws AddressBookException {
+    public Contact addContactToDB(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email, LocalDate dateAdded, int addressBookId, String[] type) throws AddressBookException {
         Connection[] connection = new Connection[1];
-        final Contacts[] contact = {null};
+        final Contact[] contact = {null};
         connection[0] = this.getConnection();
         try {
             connection[0].setAutoCommit(false);
@@ -111,7 +111,7 @@ public class AddressBookDBService {
             } catch (AddressBookException e) {
             }
             if (result) {
-                contact[0] = new Contacts(contact_id, firstName, lastName, address, city, state, zip, phone, email, dateAdded, addressBookId, type);
+                contact[0] = new Contact(contact_id, firstName, lastName, address, city, state, zip, phone, email, dateAdded, addressBookId, type);
             }
             flag[0] = true;
         };
@@ -185,8 +185,8 @@ public class AddressBookDBService {
     }
 
     // Execute query and store contact data in list
-    private List<Contacts> getContactDataUsingDB(String query) throws AddressBookException {
-        List<Contacts> contactDataList = new ArrayList<>();
+    private List<Contact> getContactDataUsingDB(String query) throws AddressBookException {
+        List<Contact> contactDataList = new ArrayList<>();
         try {
             Connection connection = this.getConnection();
             Statement statement = connection.createStatement();
@@ -199,8 +199,8 @@ public class AddressBookDBService {
     }
 
     // Give contact details by name
-    public List<Contacts> getContactData(String name) throws AddressBookException {
-        List<Contacts> contactDataList = null;
+    public List<Contact> getContactData(String name) throws AddressBookException {
+        List<Contact> contactDataList = null;
         if (contactDataStatement == null)
             this.prepareStatementForContactData();
         try {
@@ -214,8 +214,8 @@ public class AddressBookDBService {
     }
 
     // Add to contactsList given resultSet
-    private List<Contacts> getContactData(ResultSet resultSet) throws AddressBookException {
-        List<Contacts> contactsList = new ArrayList<>();
+    private List<Contact> getContactData(ResultSet resultSet) throws AddressBookException {
+        List<Contact> contactList = new ArrayList<>();
         try {
             while (resultSet.next()) {
                 int id = resultSet.getInt("contact_id");
@@ -227,12 +227,12 @@ public class AddressBookDBService {
                 String zip = resultSet.getString("zip");
                 String phoneNumber = resultSet.getString("phone_number");
                 String email = resultSet.getString("email");
-                contactsList.add(new Contacts(id, firstName, lastName, address, city, state, zip, phoneNumber, email));
+                contactList.add(new Contact(id, firstName, lastName, address, city, state, zip, phoneNumber, email));
             }
         } catch (SQLException e) {
             throw new AddressBookException("Unable to execute query",AddressBookException.ExceptionType.QUERY_ISSUE);
         }
-        return contactsList;
+        return contactList;
     }
 
     // Prepared statement execution

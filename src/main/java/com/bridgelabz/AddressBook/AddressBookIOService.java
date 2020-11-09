@@ -34,7 +34,7 @@ public class AddressBookIOService {
 	}
 
 	// Write to file
-	public void writeDataToFile(List<Contacts> contactList, String addressBookName) {
+	public void writeDataToFile(List<Contact> contactList, String addressBookName) {
 		Path pathForResources = createDirectory();
 		StringBuffer contactBuffer = new StringBuffer();
 		contactList.forEach(contact -> {
@@ -60,15 +60,15 @@ public class AddressBookIOService {
 	}
 
 	// Read data from File
-	public ArrayList<Contacts> readDataFromFile(String addressBookName) {
+	public ArrayList<Contact> readDataFromFile(String addressBookName) {
 		Path pathForResources = createDirectory();
-		ArrayList<Contacts> contactList = new ArrayList<>();
+		ArrayList<Contact> contactList = new ArrayList<>();
 		try {
 			Files.lines(Paths.get(pathForResources + "/" + addressBookName + ".txt")).forEach(line -> {
 				line = line.trim();
 				line = line.replace(":", "");
 				String[] arr = line.split(" ");
-				contactList.add(new Contacts(arr[1], arr[3], arr[5], arr[7], arr[9], arr[11], arr[13], arr[15]));
+				contactList.add(new Contact(arr[1], arr[3], arr[5], arr[7], arr[9], arr[11], arr[13], arr[15]));
 			});
 		} catch (IOException e) {
 
@@ -77,11 +77,11 @@ public class AddressBookIOService {
 	}
 
 	// Write to CSV File
-	public void writeDataToCSV(List<Contacts> contactList, String addressBookName)
+	public void writeDataToCSV(List<Contact> contactList, String addressBookName)
 			throws CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 		Path pathForResources = createDirectory();
 		try (Writer writer = Files.newBufferedWriter(Paths.get(pathForResources + "/" + addressBookName + ".csv"));) {
-			StatefulBeanToCsv<Contacts> beanToCsv = new StatefulBeanToCsvBuilder<Contacts>(writer)
+			StatefulBeanToCsv<Contact> beanToCsv = new StatefulBeanToCsvBuilder<Contact>(writer)
 					.withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
 			beanToCsv.write(contactList);
 		} catch (IOException e) {
@@ -89,14 +89,14 @@ public class AddressBookIOService {
 	}
 
 	// Read from CSV
-	public ArrayList<Contacts> readDataFromCSV(String addressBookName) throws IOException {
+	public ArrayList<Contact> readDataFromCSV(String addressBookName) throws IOException {
 		Path pathForResources = createDirectory();
-		ArrayList<Contacts> contactList = new ArrayList<>();
+		ArrayList<Contact> contactList = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(Paths.get(pathForResources + "/" + addressBookName + ".csv"));) {
 			CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
 			String[] nextRecord;
 			while ((nextRecord = csvReader.readNext()) != null) {
-				contactList.add(new Contacts(nextRecord[0], nextRecord[1], nextRecord[2], nextRecord[3], nextRecord[4],
+				contactList.add(new Contact(nextRecord[0], nextRecord[1], nextRecord[2], nextRecord[3], nextRecord[4],
 						nextRecord[5], nextRecord[6], nextRecord[7]));
 			}
 			return contactList;
@@ -104,7 +104,7 @@ public class AddressBookIOService {
 	}
 
 	// Write to JSON
-	public void writeDataToJSON(List<Contacts> contactList, String addressBookName) throws IOException {
+	public void writeDataToJSON(List<Contact> contactList, String addressBookName) throws IOException {
 		Path pathForResources = createDirectory();
 		try (Writer writer = Files.newBufferedWriter(Paths.get(pathForResources + "/" + addressBookName + ".json"));) {
 			Gson gson = new Gson();
@@ -114,13 +114,13 @@ public class AddressBookIOService {
 	}
 	
 	//Read from JSON
-	public ArrayList<Contacts> readDataFromJSON(String addressBookName) throws IOException
+	public ArrayList<Contact> readDataFromJSON(String addressBookName) throws IOException
 	{
 		Path pathForResources = createDirectory();
-		ArrayList<Contacts> contactList = null;
+		ArrayList<Contact> contactList = null;
 		try (Reader reader = Files.newBufferedReader(Paths.get(pathForResources + "/" + addressBookName + ".json"));) {
 			Gson gson = new Gson();
-			contactList = new ArrayList<Contacts> (Arrays.asList(gson.fromJson(reader, Contacts[].class)));
+			contactList = new ArrayList<Contact> (Arrays.asList(gson.fromJson(reader, Contact[].class)));
 		}
 		return contactList;
 	}
